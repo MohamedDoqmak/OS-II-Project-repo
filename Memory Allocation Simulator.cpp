@@ -3,6 +3,86 @@
 
 using namespace std;
 
+int max(int* block_sizes, int Number_Of_Blocks) {
+	int index = 0;
+	for (int i = 0; i < Number_Of_Blocks; i++) {
+		if (block_sizes[i] >= block_sizes[index]) {
+			index = i;
+		}
+	}
+
+	return index;
+}
+
+int min(int* block_sizes, int Number_Of_Blocks) {
+	int index = 0;
+	for (int i = 0; i < Number_Of_Blocks; i++) {
+		if (block_sizes[i] <= block_sizes[index]) {
+			index = i;
+		}
+	}
+
+	return index;
+}
+
+void bestFit(int* block_sizes, int* filled, int Number_Of_Blocks, int* processes_sizes, int Number_Of_Processes) {
+	int* originalHoles = new int[Number_Of_Blocks];
+	bool hit = false;
+	for (int i = 0; i < Number_Of_Blocks; i++) {
+		originalHoles[i] = block_sizes[i];
+	}
+	int minIndex = max(block_sizes, Number_Of_Blocks);
+
+	for (int i = 0; i < Number_Of_Processes; i++) {
+		for (int j = 0; j < Number_Of_Blocks; j++) {
+			if (block_sizes[j] >= processes_sizes[i] && block_sizes[j] <= block_sizes[minIndex] && filled[j] == 0) {
+				minIndex = j;
+				hit = true;
+			}
+		}
+		if (hit) {
+			hit = false;
+			filled[minIndex] = processes_sizes[i];
+			block_sizes[minIndex] = INT_MAX;
+		}
+	}
+
+	cout << "Hole      Process" << endl;
+
+	for (int i = 0; i < Number_Of_Blocks; i++) {
+		cout << originalHoles[i] << "           " << filled[i] << endl;
+	}
+}
+
+void worstFit(int* block_sizes, int* filled, int Number_Of_Blocks, int* processes_sizes, int Number_Of_Processes) {
+	int* originalHoles = new int[Number_Of_Blocks];
+	bool hit = false;
+	for (int i = 0; i < Number_Of_Blocks; i++) {
+		originalHoles[i] = block_sizes[i];
+	}
+	int maxIndex = min(block_sizes, Number_Of_Blocks);
+
+	for (int i = 0; i < Number_Of_Processes; i++) {
+		for (int j = 0; j < Number_Of_Blocks; j++) {
+			if (block_sizes[j] >= processes_sizes[i] && block_sizes[j] >= block_sizes[maxIndex] && filled[j] == 0) {
+				maxIndex = j;
+				hit = true;
+			}
+		}
+		if (hit) {
+			hit = false;
+			filled[maxIndex] = processes_sizes[i];
+			block_sizes[maxIndex] = 0;
+		}
+	}
+
+	cout << "Hole      Process" << endl;
+
+	for (int i = 0; i < Number_Of_Blocks; i++) {
+		cout << originalHoles[i] << "           " << filled[i] << endl;
+	}
+}
+
 void First_Fit(int Number_Of_Blocks, int Number_Of_Processes, int* block_sizes, int* processes_sizes)
 {
     int* filled = new int[Number_Of_Blocks];
